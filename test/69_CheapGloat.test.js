@@ -10,7 +10,7 @@ const web3 = new Web3(provider);
 // const { interface, bytecode } = require("../compile");
 // const source = fs.readFileSync(inboxPath, "utf8");
 const buildPath = path.resolve(__dirname, 'build');
-// const contractObj = JSON.parse(fs.readFileSync("D:/DWorkspace/DPlay/link-off/contracts/link-off-contract/build/LinkOff.json", "utf8"));
+
 const contractObj = JSON.parse(fs.readFileSync(path.resolve(__dirname + "/../build/CheapGloat.json"), "utf8"));
 console.log(contractObj["CheapGloat"].abi);
 // console.log(typeof contractObj);

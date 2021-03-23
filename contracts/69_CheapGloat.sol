@@ -2,7 +2,32 @@
 
 pragma solidity >=0.7.0 <0.8.0;
 
+library SafeMath {
+    /**
+     * @dev Multiplies two numbers, throws on overflow.
+     */
+    function mul(uint256 a, uint256 b) internal pure returns (uint256 c) {
+        if (a == 0) {
+            return 0;
+        }
+        c = a * b;
+        assert(c / a == b);
+        return c;
+    }
+
+    /**
+     * @dev Integer division of two numbers, truncating the quotient.
+     */
+    function div(uint256 a, uint256 b) internal pure returns (uint256) {
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
+        // uint256 c = a / b;
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
+        return a / b;
+    }
+}
+
 contract CheapGloat {
+    using SafeMath for uint256;
     struct Gloat {
         address subAddr;
         string subUrl;
@@ -85,28 +110,6 @@ contract CheapGloat {
         subIndex++;
     }
 
-    function getCurrentRoundSubmissions(uint256 subId)
-        public
-        view
-        returns (
-            uint256,
-            address,
-            string memory,
-            string memory,
-            uint256
-        )
-    {
-        Submission storage submissionAtInd = submissions[subId];
-
-        uint256 sid = submissionAtInd.subId;
-        address saddr = submissionAtInd.subAddr;
-        string memory surl = submissionAtInd.subUrl;
-        string memory scap = submissionAtInd.subCaption;
-        uint256 srn = submissionAtInd.roundNumber;
-
-        return (sid, saddr, surl, scap, srn);
-    }
-
     function upvoteSubmissionById(uint256 subId) public payable {
         require(!locked, "picking winner");
         require(msg.value >= 0.1 ether);
@@ -135,6 +138,8 @@ contract CheapGloat {
 
     function checkIfNextRoundAndPickWinner() public returns (bool) {
         require(!locked, "Reentrant detected!");
+        require(subCount > 0);
+
         uint256 ts = block.timestamp;
         uint256 tdiffSeconds = ts - roundStartTime;
 
@@ -143,6 +148,7 @@ contract CheapGloat {
         // init variables for search
         uint256 winnerIndx = 0;
         bool winnerFound = false;
+        uint256 totalUpvotes = 0;
         int256 highScore =
             int256(submissionAt0.upvoteCount) -
                 int256(submissionAt0.downvoteCount);
@@ -151,6 +157,7 @@ contract CheapGloat {
             locked = true;
             for (uint256 i = 0; i < 69; i++) {
                 Submission storage submissionAtIndi = submissions[i];
+                totalUpvotes += submissionAtIndi.upvoteCount;
                 int256 subScore =
                     int256(submissionAtIndi.upvoteCount) -
                         int256(submissionAtIndi.downvoteCount);
@@ -178,9 +185,12 @@ contract CheapGloat {
             // now settle payments
             // 1e18 is 1 eth in wei so use 1e17 to get 0.1 eth in wei
 
-            uint256 prize = roundWinner.upvoteCount * 1e17;
+            uint256 totalPrize = totalUpvotes * 1e17;
+            uint256 winnerPrize = totalPrize.mul(90).div(100);
+            uint256 callerPrize = totalPrize.mul(5).div(100);
 
-            payable(roundWinner.subAddr).transfer(prize);
+            payable(roundWinner.subAddr).transfer(winnerPrize);
+            payable(msg.sender).transfer(callerPrize);
             payable(manager).transfer(address(this).balance);
 
             // reset varuables for next round

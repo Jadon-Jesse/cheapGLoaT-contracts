@@ -136,7 +136,7 @@ describe("69_CheapGloat", () => {
 
 
 
-  xit("Allows 69 people to submit uniqueLinks for a round", async () => {
+  it("Allows 69 people to submit uniqueLinks for a round", async () => {
     var uniqLinks = [];
     for (var i = 0; i < 69; i++) {
       var testUrl = "https://www.testurl.com/TestAccount" + i.toString();
@@ -163,7 +163,7 @@ describe("69_CheapGloat", () => {
 
   }).timeout(180000);
 
-  xit("Allows ONLY 69 people to submit uniqueLinks for a round", async () => {
+  it("Allows ONLY 69 people to submit uniqueLinks for a round", async () => {
 
 
     for (var i = 0; i < 70; i++) {
@@ -199,7 +199,7 @@ describe("69_CheapGloat", () => {
 
 
   // Test upvote
-  xit("Allows one account to submit a link and N users to upvote that submission", async () => {
+  it("Allows one account to submit a link and N users to upvote that submission", async () => {
     var testUrl = "https://www.npmjs.com/package/solc";
     var testCap = "solidity compiler package on npm";
     let subAt0;
@@ -235,7 +235,7 @@ describe("69_CheapGloat", () => {
 
   }).timeout(180000);
 
-  xit("Allows one account to submit a link and Only N unique users to upvote that submission", async () => {
+  it("Allows one account to submit a link and Only N unique users to upvote that submission", async () => {
     var testUrl = "https://www.npmjs.com/package/solc";
     var testCap = "solidity compiler package on npm";
     let subAt0;
@@ -287,7 +287,7 @@ describe("69_CheapGloat", () => {
 
 
   // test downvote
-  xit("Allows one account to submit a link and N users to downvote that submission", async () => {
+  it("Allows one account to submit a link and N users to downvote that submission", async () => {
     var testUrl = "https://www.npmjs.com/package/solc";
     var testCap = "solidity compiler package on npm";
     let subAt0;
@@ -323,7 +323,7 @@ describe("69_CheapGloat", () => {
 
   }).timeout(180000);
 
-  xit("Allows one account to submit a link and Only N unique users to downvote that submission", async () => {
+  it("Allows one account to submit a link and Only N unique users to downvote that submission", async () => {
     var testUrl = "https://www.npmjs.com/package/solc";
     var testCap = "solidity compiler package on npm";
     let subAt0;

@@ -53,7 +53,7 @@ beforeEach(async () => {
 
 describe("69_CheapGloat", () => {
   it("Deployes a contract", () => {
-    // console.log(accounts);
+    console.log(cheapGloat.options.address);
     assert.ok(cheapGloat.options.address);
   });
 
@@ -418,12 +418,40 @@ describe("69_CheapGloat", () => {
 
     }
 
+    const callerAccIndx = 79;
+
+    // check current balances before we call pick winner
+    const winnerBalBefore = await web3.eth.getBalance(accounts[chosenWinner]);
+    const callerBalBefore = await web3.eth.getBalance(accounts[callerAccIndx]);
+    const managerBalBefore = await web3.eth.getBalance(accounts[0]);
+    const contractBalBefore = await web3.eth.getBalance(cheapGloat.options.address);
+
+    console.log("Before Pick Winner");
+    console.log("Winner Balance: ", web3.utils.fromWei(winnerBalBefore));
+    console.log("Caller Balance: ", web3.utils.fromWei(callerBalBefore));
+    console.log("Manager Balance: ", web3.utils.fromWei(managerBalBefore));
+    console.log("Contract Balance: ", web3.utils.fromWei(contractBalBefore));
+
+
+
     // now call pick winner function from account that hasnt submitted
     const winnerFound = await cheapGloat.methods.checkIfNextRoundAndPickWinner().send({
-      from: accounts[79],
+      from: accounts[callerAccIndx],
       gas: "5000000"
     });
-    console.log("Winner Found", winnerFound);
+    // console.log("Winner Found", winnerFound);
+    const winnerBalAfter = await web3.eth.getBalance(accounts[chosenWinner]);
+    const callerBalAfter = await web3.eth.getBalance(accounts[callerAccIndx]);
+    const managerBalAfter = await web3.eth.getBalance(accounts[0]);
+    const contractBalAfter = await web3.eth.getBalance(cheapGloat.options.address);
+
+
+    console.log("After Pick Winner");
+    console.log("Winner Balance: ", web3.utils.fromWei(winnerBalAfter));
+    console.log("Caller Balance: ", web3.utils.fromWei(callerBalAfter));
+    console.log("Manager Balance: ", web3.utils.fromWei(managerBalAfter));
+    console.log("Contract Balance: ", web3.utils.fromWei(contractBalAfter));
+
 
     // submissions will now be an empty array!
     // const winnerData = await cheapGloat.methods.submissions(chosenWinner).call();

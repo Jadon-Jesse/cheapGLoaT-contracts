@@ -76,7 +76,8 @@ contract CheapGloat {
     uint256 public currentRoundNum = 0;
 
     // uint public roundIntervalSeconds = 21600;
-    uint256 public roundIntervalSeconds = 600;
+    // uint256 public roundIntervalSeconds = 600;
+    uint256 public roundIntervalSeconds = 10;
     bool locked = false;
 
     constructor() {
@@ -214,7 +215,8 @@ contract CheapGloat {
             currentRoundNum++;
 
             locked = false;
+            return true;
         }
-        return winnerFound;
+        return false;
     }
 }

@@ -26,6 +26,10 @@ const contractObj = JSON.parse(fs.readFileSync(path.resolve(__dirname + "/../bui
 let accounts;
 let cheapGloat;
 
+function randomInteger(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 beforeEach(async () => {
   // get list of accounuts
   accounts = await web3.eth.getAccounts();
@@ -134,7 +138,7 @@ describe("69_CheapGloat", () => {
 
   xit("Allows 69 people to submit uniqueLinks for a round", async () => {
     var uniqLinks = [];
-    for (var i = 0; i < 10; i++) {
+    for (var i = 0; i < 69; i++) {
       var testUrl = "https://www.testurl.com/TestAccount" + i.toString();
       var testCap = "solidity compiler package on npm";
       const done = await cheapGloat.methods.submitLink(testUrl, testCap).send({
@@ -146,9 +150,9 @@ describe("69_CheapGloat", () => {
     }
 
     const subLen = await cheapGloat.methods.subCount().call();
-    assert.strictEqual(subLen, "10");
+    assert.strictEqual(subLen, "69");
 
-    for (var j = 0; j < 10; j++) {
+    for (var j = 0; j < 69; j++) {
 
       const subAtj = await cheapGloat.methods.submissions(j).call();
 
@@ -195,7 +199,7 @@ describe("69_CheapGloat", () => {
 
 
   // Test upvote
-  it("Allows one account to submit a link and N users to upvote that submission", async () => {
+  xit("Allows one account to submit a link and N users to upvote that submission", async () => {
     var testUrl = "https://www.npmjs.com/package/solc";
     var testCap = "solidity compiler package on npm";
     let subAt0;
@@ -231,7 +235,7 @@ describe("69_CheapGloat", () => {
 
   }).timeout(180000);
 
-  it("Allows one account to submit a link and Only N unique users to upvote that submission", async () => {
+  xit("Allows one account to submit a link and Only N unique users to upvote that submission", async () => {
     var testUrl = "https://www.npmjs.com/package/solc";
     var testCap = "solidity compiler package on npm";
     let subAt0;
@@ -283,7 +287,7 @@ describe("69_CheapGloat", () => {
 
 
   // test downvote
-  it("Allows one account to submit a link and N users to downvote that submission", async () => {
+  xit("Allows one account to submit a link and N users to downvote that submission", async () => {
     var testUrl = "https://www.npmjs.com/package/solc";
     var testCap = "solidity compiler package on npm";
     let subAt0;
@@ -319,7 +323,7 @@ describe("69_CheapGloat", () => {
 
   }).timeout(180000);
 
-  it("Allows one account to submit a link and Only N unique users to downvote that submission", async () => {
+  xit("Allows one account to submit a link and Only N unique users to downvote that submission", async () => {
     var testUrl = "https://www.npmjs.com/package/solc";
     var testCap = "solidity compiler package on npm";
     let subAt0;
@@ -366,6 +370,98 @@ describe("69_CheapGloat", () => {
     }
 
   }).timeout(180000);
+
+
+  // test pick winner
+  it("Allows n unique users to submit a link and N users to upvote or downvote that submission. Then picks a winner and performs transfers", async () => {
+    // var uniqLinks = [];
+    var winnerSub;
+    const nUsers = 15;
+    const chosenWinner = randomInteger(1, nUsers) - 1;
+
+    var currentRoundNum;
+
+    console.log("Chosen winner:", chosenWinner);
+    for (var i = 0; i < nUsers; i++) {
+      var testUrl = "https://www.testurl.com/TestAccount" + i.toString();
+      var testCap = "solidity compiler package on npm";
+      const done = await cheapGloat.methods.submitLink(testUrl, testCap).send({
+        from: accounts[i],
+        gas: "1000000"
+      });
+      if (i == chosenWinner) {
+        winnerSub = {
+          saddr: accounts[i],
+          sid: i,
+          url: testUrl,
+          cap: testCap
+        };
+      }
+
+    }
+
+    const subLen = await cheapGloat.methods.subCount().call();
+    assert(subLen, nUsers);
+
+    // check the current round num
+    currentRoundNum = await cheapGloat.methods.currentRoundNum().call();
+    assert(currentRoundNum, 0);
+
+
+    // now everyone go upvote the winner
+    const numUpvotesWinner = 26;
+    for (var j = 0; j < numUpvotesWinner; j++) {
+      await cheapGloat.methods.upvoteSubmissionById(chosenWinner).send({
+        from: accounts[j],
+        value: web3.utils.toWei("0.1", "ether")
+      });
+
+    }
+
+    // now call pick winner function from account that hasnt submitted
+    const winnerFound = await cheapGloat.methods.checkIfNextRoundAndPickWinner().send({
+      from: accounts[79],
+      gas: "5000000"
+    });
+    console.log("Winner Found", winnerFound);
+
+    // submissions will now be an empty array!
+    // const winnerData = await cheapGloat.methods.submissions(chosenWinner).call();
+    // console.log("Winner Data", winnerData);
+
+
+    // assert(winnerData.subId, chosenWinner);
+    // assert(winnerData.upvoteCount, numUpvotesWinner);
+
+    // now check the gloat list
+    const gloatAt0 = await cheapGloat.methods.theGloats(0).call();
+    console.log("Gloat Data", gloatAt0);
+
+    const gloatLink0 = await cheapGloat.methods.theGloatLinks(winnerSub.url).call();
+    console.log("Gloat Link", gloatLink0);
+
+    // check that the currentRound number increased
+    currentRoundNum = await cheapGloat.methods.currentRoundNum().call();
+
+
+    assert(gloatAt0.subAddr, winnerSub.saddr);
+    assert(gloatAt0.subUrl, winnerSub.url);
+    assert(gloatAt0.subCaption, winnerSub.cap);
+    assert(gloatAt0.roundNumber, 0);
+    assert(gloatAt0.upvoteCount, numUpvotesWinner);
+    assert(gloatAt0.downvoteCount, 0);
+
+    assert(gloatLink0, true);
+
+    assert(currentRoundNum, 1);
+
+
+
+
+
+
+  }).timeout(180000);
+
 
 
 });

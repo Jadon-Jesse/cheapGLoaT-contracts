@@ -132,7 +132,7 @@ describe("69_CheapGloat", () => {
 
 
 
-  it("Allows 69 people to submit uniqueLinks for a round", async () => {
+  xit("Allows 69 people to submit uniqueLinks for a round", async () => {
     var uniqLinks = [];
     for (var i = 0; i < 10; i++) {
       var testUrl = "https://www.testurl.com/TestAccount" + i.toString();
@@ -159,7 +159,7 @@ describe("69_CheapGloat", () => {
 
   }).timeout(180000);
 
-  it("Allows ONLY 69 people to submit uniqueLinks for a round", async () => {
+  xit("Allows ONLY 69 people to submit uniqueLinks for a round", async () => {
 
 
     for (var i = 0; i < 70; i++) {
@@ -192,5 +192,180 @@ describe("69_CheapGloat", () => {
     }
 
   }).timeout(180000);
+
+
+  // Test upvote
+  it("Allows one account to submit a link and N users to upvote that submission", async () => {
+    var testUrl = "https://www.npmjs.com/package/solc";
+    var testCap = "solidity compiler package on npm";
+    let subAt0;
+    await cheapGloat.methods.submitLink(testUrl, testCap).send({
+      from: accounts[0],
+      gas: "1000000"
+    });
+    subAt0 = await cheapGloat.methods.submissions(0).call();
+    const subLen = await cheapGloat.methods.subCount().call();
+
+    assert.strictEqual(subAt0.subId, "0");
+    assert.strictEqual(subAt0.subAddr, accounts[0]);
+    assert.strictEqual(subAt0.subUrl, testUrl);
+    assert.strictEqual(subAt0.subCaption, testCap);
+    assert.strictEqual(subAt0.upvoteCount, "0");
+    assert.strictEqual(subAt0.downvoteCount, "0");
+    assert.strictEqual(subLen, "1");
+
+    // now upvote the submission
+    var numUpvotesTest = 77;
+    for (var i = 0; i < numUpvotesTest; i++) {
+      // upvote the submission numUpvotesTest Times
+      const result = await cheapGloat.methods.upvoteSubmissionById(subAt0.subId).send({
+        from: accounts[i],
+        value: web3.utils.toWei("0.1", "ether")
+      });
+    }
+
+    subAt0 = await cheapGloat.methods.submissions(0).call();
+    assert.strictEqual(subAt0.subId, "0");
+    assert.strictEqual(subAt0.upvoteCount, numUpvotesTest.toString());
+    assert.strictEqual(subAt0.downvoteCount, "0");
+
+  }).timeout(180000);
+
+  it("Allows one account to submit a link and Only N unique users to upvote that submission", async () => {
+    var testUrl = "https://www.npmjs.com/package/solc";
+    var testCap = "solidity compiler package on npm";
+    let subAt0;
+    await cheapGloat.methods.submitLink(testUrl, testCap).send({
+      from: accounts[0],
+      gas: "1000000"
+    });
+    subAt0 = await cheapGloat.methods.submissions(0).call();
+    const subLen = await cheapGloat.methods.subCount().call();
+
+    assert.strictEqual(subAt0.subId, "0");
+    assert.strictEqual(subAt0.subAddr, accounts[0]);
+    assert.strictEqual(subAt0.subUrl, testUrl);
+    assert.strictEqual(subAt0.subCaption, testCap);
+    assert.strictEqual(subAt0.upvoteCount, "0");
+    assert.strictEqual(subAt0.downvoteCount, "0");
+    assert.strictEqual(subLen, "1");
+
+    // now upvote the submission
+    var numUpvotesTest = 10;
+    for (var i = 0; i < numUpvotesTest; i++) {
+      // upvote the submission numUpvotesTest Times
+      const result = await cheapGloat.methods.upvoteSubmissionById(subAt0.subId).send({
+        from: accounts[i],
+        value: web3.utils.toWei("0.1", "ether")
+      });
+    }
+
+    try {
+      // now try upvote sub with an account that's already upvoted the sub
+      await cheapGloat.methods.upvoteSubmissionById(subAt0.subId).send({
+        from: accounts[5],
+        value: web3.utils.toWei("0.1", "ether")
+      });
+      assert(false);
+    }
+    catch (error) {
+      subAt0 = await cheapGloat.methods.submissions(0).call();
+      assert.strictEqual(subAt0.subId, "0");
+      assert.strictEqual(subAt0.upvoteCount, numUpvotesTest.toString());
+      assert.strictEqual(subAt0.downvoteCount, "0");
+
+      assert(error);
+    }
+
+  }).timeout(180000);
+
+
+
+
+  // test downvote
+  it("Allows one account to submit a link and N users to downvote that submission", async () => {
+    var testUrl = "https://www.npmjs.com/package/solc";
+    var testCap = "solidity compiler package on npm";
+    let subAt0;
+    await cheapGloat.methods.submitLink(testUrl, testCap).send({
+      from: accounts[0],
+      gas: "1000000"
+    });
+    subAt0 = await cheapGloat.methods.submissions(0).call();
+    const subLen = await cheapGloat.methods.subCount().call();
+
+    assert.strictEqual(subAt0.subId, "0");
+    assert.strictEqual(subAt0.subAddr, accounts[0]);
+    assert.strictEqual(subAt0.subUrl, testUrl);
+    assert.strictEqual(subAt0.subCaption, testCap);
+    assert.strictEqual(subAt0.upvoteCount, "0");
+    assert.strictEqual(subAt0.downvoteCount, "0");
+    assert.strictEqual(subLen, "1");
+
+    // now upvote the submission
+    var numDownvotesTest = 25;
+    for (var i = 0; i < numDownvotesTest; i++) {
+      // upvote the submission numDownvotesTest Times
+      const result = await cheapGloat.methods.downvoteSubmissionById(subAt0.subId).send({
+        from: accounts[i],
+        value: web3.utils.toWei("0.1", "ether")
+      });
+    }
+
+    subAt0 = await cheapGloat.methods.submissions(0).call();
+    assert.strictEqual(subAt0.subId, "0");
+    assert.strictEqual(subAt0.downvoteCount, numDownvotesTest.toString());
+    assert.strictEqual(subAt0.upvoteCount, "0");
+
+  }).timeout(180000);
+
+  it("Allows one account to submit a link and Only N unique users to downvote that submission", async () => {
+    var testUrl = "https://www.npmjs.com/package/solc";
+    var testCap = "solidity compiler package on npm";
+    let subAt0;
+    await cheapGloat.methods.submitLink(testUrl, testCap).send({
+      from: accounts[0],
+      gas: "1000000"
+    });
+    subAt0 = await cheapGloat.methods.submissions(0).call();
+    const subLen = await cheapGloat.methods.subCount().call();
+
+    assert.strictEqual(subAt0.subId, "0");
+    assert.strictEqual(subAt0.subAddr, accounts[0]);
+    assert.strictEqual(subAt0.subUrl, testUrl);
+    assert.strictEqual(subAt0.subCaption, testCap);
+    assert.strictEqual(subAt0.upvoteCount, "0");
+    assert.strictEqual(subAt0.downvoteCount, "0");
+    assert.strictEqual(subLen, "1");
+
+    // now upvote the submission
+    var numDownvotesTest = 25;
+    for (var i = 0; i < numDownvotesTest; i++) {
+      // upvote the submission numUpvotesTest Times
+      const result = await cheapGloat.methods.downvoteSubmissionById(subAt0.subId).send({
+        from: accounts[i],
+        value: web3.utils.toWei("0.1", "ether")
+      });
+    }
+
+    try {
+      // now try upvote sub with an account that's already upvoted the sub
+      await cheapGloat.methods.downvoteSubmissionById(subAt0.subId).send({
+        from: accounts[5],
+        value: web3.utils.toWei("0.1", "ether")
+      });
+      assert(false);
+    }
+    catch (error) {
+      subAt0 = await cheapGloat.methods.submissions(0).call();
+      assert.strictEqual(subAt0.subId, "0");
+      assert.strictEqual(subAt0.downvoteCount, numDownvotesTest.toString());
+      assert.strictEqual(subAt0.upvoteCount, "0");
+
+      assert(error);
+    }
+
+  }).timeout(180000);
+
 
 });

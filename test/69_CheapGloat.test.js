@@ -483,9 +483,113 @@ describe("69_CheapGloat", () => {
 
     assert(currentRoundNum, 1);
 
+  }).timeout(180000);
+
+  it("Allows n unique users to submit a link and N users to downvote that submission. Then picks a winner and performs transfers", async () => {
+    // var uniqLinks = [];
+    var winnerSub;
+    const nUsers = 15;
+    const chosenLooser = randomInteger(1, nUsers) - 1;
+
+    var currentRoundNum;
+
+    // console.log("Chosen looser:", chosenLooser);
+    for (var i = 0; i < nUsers; i++) {
+      var testUrl = "https://www.testurl.com/TestAccount" + i.toString();
+      var testCap = "solidity compiler package on npm";
+      const done = await cheapGloat.methods.submitLink(testUrl, testCap).send({
+        from: accounts[i],
+        gas: "1000000"
+      });
+      if (i == 0) {
+        // winner should be the first index
+        winnerSub = {
+          saddr: accounts[i],
+          sid: i,
+          url: testUrl,
+          cap: testCap
+        };
+      }
+
+    }
+
+    const subLen = await cheapGloat.methods.subCount().call();
+    assert(subLen, nUsers);
+
+    // check the current round num
+    currentRoundNum = await cheapGloat.methods.currentRoundNum().call();
+    assert(currentRoundNum, 0);
+
+
+    // now  go downvote the winner
+    const numDownvotesWinner = 26;
+    for (var j = 0; j < numDownvotesWinner; j++) {
+      await cheapGloat.methods.downvoteSubmissionById(chosenLooser).send({
+        from: accounts[j],
+        value: web3.utils.toWei("0.1", "ether")
+      });
+
+    }
+
+    const callerAccIndx = 79;
+
+    // check current balances before we call pick winner
+    const winnerBalBefore = await web3.eth.getBalance(accounts[0]);
+    const looserBalBefore = await web3.eth.getBalance(accounts[chosenLooser]);
+    const callerBalBefore = await web3.eth.getBalance(accounts[callerAccIndx]);
+    const managerBalBefore = await web3.eth.getBalance(accounts[0]);
+    const contractBalBefore = await web3.eth.getBalance(cheapGloat.options.address);
+
+    console.log("Before Pick Winner");
+    console.log("Winner Balance: ", web3.utils.fromWei(winnerBalBefore));
+    console.log("Looser Balance: ", web3.utils.fromWei(looserBalBefore));
+    console.log("Caller Balance: ", web3.utils.fromWei(callerBalBefore));
+    console.log("Manager Balance: ", web3.utils.fromWei(managerBalBefore));
+    console.log("Contract Balance: ", web3.utils.fromWei(contractBalBefore));
 
 
 
+    // now call pick winner function from account that hasnt submitted
+    const winnerFound = await cheapGloat.methods.checkIfNextRoundAndPickWinner().send({
+      from: accounts[callerAccIndx],
+      gas: "5000000"
+    });
+    // console.log("Winner Found", winnerFound);
+    const winnerBalAfter = await web3.eth.getBalance(accounts[0]);
+    const looserBalAfter = await web3.eth.getBalance(accounts[chosenLooser]);
+    const callerBalAfter = await web3.eth.getBalance(accounts[callerAccIndx]);
+    const managerBalAfter = await web3.eth.getBalance(accounts[0]);
+    const contractBalAfter = await web3.eth.getBalance(cheapGloat.options.address);
+
+
+    console.log("After Pick Winner");
+    console.log("Winner Balance: ", web3.utils.fromWei(winnerBalAfter));
+    console.log("Looser Balance: ", web3.utils.fromWei(looserBalAfter));
+    console.log("Caller Balance: ", web3.utils.fromWei(callerBalAfter));
+    console.log("Manager Balance: ", web3.utils.fromWei(managerBalAfter));
+    console.log("Contract Balance: ", web3.utils.fromWei(contractBalAfter));
+
+    // now check the gloat list
+    const gloatAt0 = await cheapGloat.methods.theGloats(0).call();
+    console.log("Gloat Data", gloatAt0);
+
+    const gloatLink0 = await cheapGloat.methods.theGloatLinks(winnerSub.url).call();
+    console.log("Gloat Link", gloatLink0);
+
+    // check that the currentRound number increased
+    currentRoundNum = await cheapGloat.methods.currentRoundNum().call();
+
+
+    assert(gloatAt0.subAddr, winnerSub.saddr);
+    assert(gloatAt0.subUrl, winnerSub.url);
+    assert(gloatAt0.subCaption, winnerSub.cap);
+    assert(gloatAt0.roundNumber, 0);
+    assert(gloatAt0.upvoteCount, 0);
+    assert(gloatAt0.downvoteCount, 0);
+
+    assert(gloatLink0, true);
+
+    assert(currentRoundNum, 1);
 
 
   }).timeout(180000);

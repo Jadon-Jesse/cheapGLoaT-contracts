@@ -4,6 +4,7 @@ An attempt at a decentrailized link aggrigrator
 
 ### Overview
 TODO
+test contract on rinkeby: 0x738a6F545fe742d64E7496Eb95CdbEe7541012C0
 
 
 ### Pre-requisits

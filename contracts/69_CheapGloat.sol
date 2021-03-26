@@ -67,7 +67,7 @@ contract CheapGloat {
     // keep track of Gloats
     mapping(string => bool) public theGloatLinks;
     // all gloat objects as hash table + trackingCountVariable
-    uint256 gloatIndex;
+    uint256 public gloatIndex;
     mapping(uint256 => Gloat) public theGloats;
 
     Submission[69] public submissions;
@@ -76,8 +76,8 @@ contract CheapGloat {
     uint256 public currentRoundNum = 0;
 
     // uint public roundIntervalSeconds = 21600;
-    // uint256 public roundIntervalSeconds = 600;
-    uint256 public roundIntervalSeconds = 10;
+    uint256 public roundIntervalSeconds = 600;
+    // uint256 public roundIntervalSeconds = 10;
     bool locked = false;
 
     constructor() {
@@ -87,7 +87,7 @@ contract CheapGloat {
 
     function submitLink(string memory url, string memory caption) public {
         require(!locked);
-        require(!roundSubAddrs[msg.sender]);
+        // require(!roundSubAddrs[msg.sender]);
         require(!roundSubLinks[url]);
         require(!theGloatLinks[url]);
         require(subCount <= 69);

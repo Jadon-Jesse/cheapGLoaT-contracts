@@ -73,14 +73,13 @@ contract CheapGloat {
     mapping(uint256 => Gloat) public theGloats;
 
     Submission[69] public submissions;
-    // mapping (uint => Submission) public bids;
 
     uint256 public currentRoundNum = 0;
 
     // uint public roundIntervalSeconds = 21600;
-    // uint256 public roundIntervalSeconds = 600;
-    uint256 public roundIntervalSeconds = 10;
-    bool locked = false;
+    uint256 public roundIntervalSeconds = 600;
+    // uint256 public roundIntervalSeconds = 10;
+    bool public locked = false;
 
     constructor() {
         manager = msg.sender;
@@ -89,7 +88,7 @@ contract CheapGloat {
 
     function submitLink(string memory url, string memory caption) public {
         require(!locked);
-        // require(!roundSubAddrs[msg.sender]);
+        require(!roundSubAddrs[msg.sender]);
         require(!roundSubLinks[url]);
         require(!theGloatLinks[url]);
         require(subCount <= 69);
@@ -142,7 +141,7 @@ contract CheapGloat {
     }
 
     function checkIfNextRoundAndPickWinner() public returns (bool) {
-        require(!locked, "Reentrant detected!");
+        require(!locked);
         require(subCount > 0);
 
         uint256 ts = block.timestamp;
@@ -191,7 +190,7 @@ contract CheapGloat {
             // 1e18 is 1 eth in wei so use 5e14 to get 0.5 ceth in wei
             // 70% of pot goes to winner
             // 20% to caller
-            // 10% to manager
+            // remainder to manager
 
             uint256 totalPrize = totalUpvotes * 5e14;
             uint256 winnerPrize = totalPrize.mul(70).div(100);
@@ -223,9 +222,12 @@ contract CheapGloat {
                 for (uint256 jku = 0; jku < subjk.upvoters.length; jku++) {
                     delete subjk.upvotes[subjk.upvoters[jku]];
                 }
+                delete subjk.upvoters;
+
                 for (uint256 jkd = 0; jkd < subjk.downvoters.length; jkd++) {
                     delete subjk.downvotes[subjk.downvoters[jkd]];
                 }
+                delete subjk.downvoters;
             }
 
             delete submissions;

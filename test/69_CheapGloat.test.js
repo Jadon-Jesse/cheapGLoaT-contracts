@@ -57,7 +57,7 @@ describe("69_CheapGloat", () => {
     assert.ok(cheapGloat.options.address);
   });
 
-  it("Allows one account to submit a link", async () => {
+  xit("Allows one account to submit a link", async () => {
     var testUrl = "https://www.npmjs.com/package/solc";
     var testCap = "solidity compiler package on npm";
     const bl = await web3.eth.getBalance(accounts[0]);
@@ -81,7 +81,7 @@ describe("69_CheapGloat", () => {
     console.log(bl - blEnd);
   });
 
-  it("Allows one account to submit a link Only Once This round", async () => {
+  xit("Allows one account to submit a link Only Once This round", async () => {
     var testUrl = "https://www.npmjs.com/package/solc";
     var testCap = "solidity compiler package on npm";
     const bl = await web3.eth.getBalance(accounts[0]);
@@ -105,7 +105,7 @@ describe("69_CheapGloat", () => {
     console.log(bl - blEnd);
   });
 
-  it("Allows one account to submit a link Only Once This round", async () => {
+  xit("Allows one account to submit a link Only Once This round", async () => {
     var testUrl = "https://www.npmjs.com/package/solc";
     var testCap = "solidity compiler package on npm";
     const bl = await web3.eth.getBalance(accounts[0]);
@@ -136,7 +136,7 @@ describe("69_CheapGloat", () => {
 
 
 
-  it("Allows 69 people to submit uniqueLinks for a round", async () => {
+  xit("Allows 69 people to submit uniqueLinks for a round", async () => {
     var uniqLinks = [];
     for (var i = 0; i < 69; i++) {
       var testUrl = "https://www.testurl.com/TestAccount" + i.toString();
@@ -163,7 +163,7 @@ describe("69_CheapGloat", () => {
 
   }).timeout(180000);
 
-  it("Allows ONLY 69 people to submit uniqueLinks for a round", async () => {
+  xit("Allows ONLY 69 people to submit uniqueLinks for a round", async () => {
 
 
     for (var i = 0; i < 70; i++) {
@@ -224,7 +224,8 @@ describe("69_CheapGloat", () => {
       // upvote the submission numUpvotesTest Times
       const result = await cheapGloat.methods.upvoteSubmissionById(subAt0.subId).send({
         from: accounts[i],
-        value: web3.utils.toWei("0.1", "ether")
+        value: web3.utils.toWei("0.5", "finney"),
+        gas: "1000000"
       });
     }
 
@@ -260,7 +261,8 @@ describe("69_CheapGloat", () => {
       // upvote the submission numUpvotesTest Times
       const result = await cheapGloat.methods.upvoteSubmissionById(subAt0.subId).send({
         from: accounts[i],
-        value: web3.utils.toWei("0.1", "ether")
+        value: web3.utils.toWei("0.5", "finney"),
+        gas: "1000000"
       });
     }
 
@@ -268,7 +270,8 @@ describe("69_CheapGloat", () => {
       // now try upvote sub with an account that's already upvoted the sub
       await cheapGloat.methods.upvoteSubmissionById(subAt0.subId).send({
         from: accounts[5],
-        value: web3.utils.toWei("0.1", "ether")
+        value: web3.utils.toWei("0.5", "finney"),
+        gas: "1000000"
       });
       assert(false);
     }
@@ -312,7 +315,8 @@ describe("69_CheapGloat", () => {
       // upvote the submission numDownvotesTest Times
       const result = await cheapGloat.methods.downvoteSubmissionById(subAt0.subId).send({
         from: accounts[i],
-        value: web3.utils.toWei("0.1", "ether")
+        value: web3.utils.toWei("0.5", "finney"),
+        gas: "1000000"
       });
     }
 
@@ -348,7 +352,8 @@ describe("69_CheapGloat", () => {
       // upvote the submission numUpvotesTest Times
       const result = await cheapGloat.methods.downvoteSubmissionById(subAt0.subId).send({
         from: accounts[i],
-        value: web3.utils.toWei("0.1", "ether")
+        value: web3.utils.toWei("0.5", "finney"),
+        gas: "1000000"
       });
     }
 
@@ -356,7 +361,8 @@ describe("69_CheapGloat", () => {
       // now try upvote sub with an account that's already upvoted the sub
       await cheapGloat.methods.downvoteSubmissionById(subAt0.subId).send({
         from: accounts[5],
-        value: web3.utils.toWei("0.1", "ether")
+        value: web3.utils.toWei("0.5", "finney"),
+        gas: "1000000"
       });
       assert(false);
     }
@@ -413,7 +419,8 @@ describe("69_CheapGloat", () => {
     for (var j = 0; j < numUpvotesWinner; j++) {
       await cheapGloat.methods.upvoteSubmissionById(chosenWinner).send({
         from: accounts[j],
-        value: web3.utils.toWei("0.1", "ether")
+        value: web3.utils.toWei("0.5", "finney"),
+        gas: "1000000"
       });
 
     }
@@ -526,7 +533,8 @@ describe("69_CheapGloat", () => {
     for (var j = 0; j < numDownvotesWinner; j++) {
       await cheapGloat.methods.downvoteSubmissionById(chosenLooser).send({
         from: accounts[j],
-        value: web3.utils.toWei("0.1", "ether")
+        value: web3.utils.toWei("0.5", "finney"),
+        gas: "1000000"
       });
 
     }

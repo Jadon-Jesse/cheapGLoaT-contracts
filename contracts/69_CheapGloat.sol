@@ -123,6 +123,7 @@ contract CheapGloat {
         require(!submissionAtId.upvotes[msg.sender]);
 
         submissionAtId.upvotes[msg.sender] = true;
+        submissionAtId.upvoters.push(msg.sender);
         submissionAtId.upvoteCount++;
     }
 
@@ -136,6 +137,7 @@ contract CheapGloat {
         require(!submissionAtId.downvotes[msg.sender]);
 
         submissionAtId.downvotes[msg.sender] = true;
+        submissionAtId.downvoters.push(msg.sender);
         submissionAtId.downvoteCount++;
     }
 

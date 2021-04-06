@@ -45,8 +45,10 @@ contract CheapGloat {
         uint256 roundNumber;
         uint256 upvoteCount;
         mapping(address => bool) upvotes;
+        address[] upvoters;
         uint256 downvoteCount;
         mapping(address => bool) downvotes;
+        address[] downvoters;
     }
     address public manager;
     uint256 public roundStartTime;
@@ -185,10 +187,13 @@ contract CheapGloat {
 
             // now settle payments
             // 1e18 is 1 eth in wei so use 1e17 to get 0.1 eth in wei
+            // 70% of pot goes to winner
+            // 20% to caller
+            // 10% to manager
 
             uint256 totalPrize = totalUpvotes * 1e17;
-            uint256 winnerPrize = totalPrize.mul(90).div(100);
-            uint256 callerPrize = totalPrize.mul(5).div(100);
+            uint256 winnerPrize = totalPrize.mul(70).div(100);
+            uint256 callerPrize = totalPrize.mul(20).div(100);
 
             payable(roundWinner.subAddr).transfer(winnerPrize);
             payable(msg.sender).transfer(callerPrize);
@@ -206,6 +211,20 @@ contract CheapGloat {
                 delete roundSubAddrs[roundSubAddrsKeys[k]];
             }
             delete roundSubAddrsKeys;
+
+            // delete submissions properly
+            // see https://docs.soliditylang.org/en/v0.6.6/security-considerations.html#clearing-mappings
+
+            for (uint256 jk = 0; jk < subCount; jk++) {
+                Submission storage subjk = submissions[jk];
+                // first remove upvoters
+                for (uint256 jku = 0; jku < subjk.upvoters.length; jku++) {
+                    delete subjk.upvotes[subjk.upvoters[jku]];
+                }
+                for (uint256 jkd = 0; jkd < subjk.downvoters.length; jkd++) {
+                    delete subjk.downvotes[subjk.downvoters[jkd]];
+                }
+            }
 
             delete submissions;
 

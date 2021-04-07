@@ -224,7 +224,7 @@ describe("69_CheapGloat", () => {
       // upvote the submission numUpvotesTest Times
       const result = await cheapGloat.methods.upvoteSubmissionById(subAt0.subId).send({
         from: accounts[i],
-        value: web3.utils.toWei("0.5", "finney"),
+        value: web3.utils.toWei("0.5", "ether"),
         gas: "1000000"
       });
     }
@@ -261,7 +261,7 @@ describe("69_CheapGloat", () => {
       // upvote the submission numUpvotesTest Times
       const result = await cheapGloat.methods.upvoteSubmissionById(subAt0.subId).send({
         from: accounts[i],
-        value: web3.utils.toWei("0.5", "finney"),
+        value: web3.utils.toWei("0.5", "ether"),
         gas: "1000000"
       });
     }
@@ -270,7 +270,7 @@ describe("69_CheapGloat", () => {
       // now try upvote sub with an account that's already upvoted the sub
       await cheapGloat.methods.upvoteSubmissionById(subAt0.subId).send({
         from: accounts[5],
-        value: web3.utils.toWei("0.5", "finney"),
+        value: web3.utils.toWei("0.5", "ether"),
         gas: "1000000"
       });
       assert(false);
@@ -315,7 +315,7 @@ describe("69_CheapGloat", () => {
       // upvote the submission numDownvotesTest Times
       const result = await cheapGloat.methods.downvoteSubmissionById(subAt0.subId).send({
         from: accounts[i],
-        value: web3.utils.toWei("0.5", "finney"),
+        value: web3.utils.toWei("0.5", "ether"),
         gas: "1000000"
       });
     }
@@ -352,7 +352,7 @@ describe("69_CheapGloat", () => {
       // upvote the submission numUpvotesTest Times
       const result = await cheapGloat.methods.downvoteSubmissionById(subAt0.subId).send({
         from: accounts[i],
-        value: web3.utils.toWei("0.5", "finney"),
+        value: web3.utils.toWei("0.5", "ether"),
         gas: "1000000"
       });
     }
@@ -361,7 +361,7 @@ describe("69_CheapGloat", () => {
       // now try upvote sub with an account that's already upvoted the sub
       await cheapGloat.methods.downvoteSubmissionById(subAt0.subId).send({
         from: accounts[5],
-        value: web3.utils.toWei("0.5", "finney"),
+        value: web3.utils.toWei("0.5", "ether"),
         gas: "1000000"
       });
       assert(false);
@@ -419,7 +419,7 @@ describe("69_CheapGloat", () => {
     for (var j = 0; j < numUpvotesWinner; j++) {
       await cheapGloat.methods.upvoteSubmissionById(chosenWinner).send({
         from: accounts[j],
-        value: web3.utils.toWei("0.5", "finney"),
+        value: web3.utils.toWei("0.5", "ether"),
         gas: "1000000"
       });
 
@@ -533,7 +533,7 @@ describe("69_CheapGloat", () => {
     for (var j = 0; j < numDownvotesWinner; j++) {
       await cheapGloat.methods.downvoteSubmissionById(chosenLooser).send({
         from: accounts[j],
-        value: web3.utils.toWei("0.5", "finney"),
+        value: web3.utils.toWei("0.5", "ether"),
         gas: "1000000"
       });
 

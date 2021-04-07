@@ -4,8 +4,8 @@ An attempt at a decentrailized link aggrigrator
 
 ### Overview
 TODO
-test contract on rinkeby: 0x93Ca11b67aAC39c06f98b4d9157ea3c1f31Cc5C0
-
+test contract on rinkeby: 0xC6c30B5DFa848A8778a89b19301761162743D19c
+test contract on cheapETH: 0xa7663867ce5642C33A4840f2803c9Fb6eE3CB94C
 
 ### Pre-requisits
 * solc 0.7.6

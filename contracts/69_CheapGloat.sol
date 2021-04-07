@@ -77,8 +77,8 @@ contract CheapGloat {
     uint256 public currentRoundNum = 0;
 
     // uint public roundIntervalSeconds = 21600;
-    uint256 public roundIntervalSeconds = 600;
-    // uint256 public roundIntervalSeconds = 10;
+    // uint256 public roundIntervalSeconds = 600;
+    uint256 public roundIntervalSeconds = 10;
     bool public locked = false;
 
     constructor() {
@@ -114,7 +114,7 @@ contract CheapGloat {
 
     function upvoteSubmissionById(uint256 subId) public payable {
         require(!locked, "picking winner");
-        require(msg.value >= 0.0005 ether);
+        require(msg.value >= 0.5 ether);
         require(subCount > 0);
         require(subId < subCount);
 
@@ -128,7 +128,7 @@ contract CheapGloat {
 
     function downvoteSubmissionById(uint256 subId) public payable {
         require(!locked, "picking winner");
-        require(msg.value >= 0.0005 ether);
+        require(msg.value >= 0.5 ether);
         require(subCount > 0);
         require(subId < subCount);
 
@@ -187,12 +187,12 @@ contract CheapGloat {
             theGloatLinks[roundWinner.subUrl] = true;
 
             // now settle payments
-            // 1e18 is 1 eth in wei so use 5e14 to get 0.5 ceth in wei
+            // 1e18 is 1 eth in wei so use 5e17 to get 0.5 ceth in wei
             // 70% of pot goes to winner
             // 20% to caller
             // remainder to manager
 
-            uint256 totalPrize = totalUpvotes * 5e14;
+            uint256 totalPrize = totalUpvotes * 5e17;
             uint256 winnerPrize = totalPrize.mul(70).div(100);
             uint256 callerPrize = totalPrize.mul(20).div(100);
 

@@ -19,8 +19,6 @@
 ## About the contracts
 This repo contains the code for the cheapGLoaT contract running on the cheapETH network. The contract is written in solidity version 0.7.6
 
-contract address on cheapETH: 0x03A4BEF74AD092B908500f72182975065C86693e
-
 
 ## Testing the contract
 The project uses mocha as the test framework

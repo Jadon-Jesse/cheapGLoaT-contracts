@@ -76,8 +76,8 @@ contract CheapGloat {
 
     uint256 public currentRoundNum = 0;
 
-    // uint public roundIntervalSeconds = 21600;
-    uint256 public roundIntervalSeconds = 600;
+    uint256 public roundIntervalSeconds = 86400;
+    // uint256 public roundIntervalSeconds = 600;
     // uint256 public roundIntervalSeconds = 10;
     bool public locked = false;
 
